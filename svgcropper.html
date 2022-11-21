@@ -5,11 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>webpack starterkit</title>
   <meta name="description" content="A light foundation for your next frontend project based on webpack.">
+  <style>
+    svg {
+      padding: 40px;
+    }
+  </style>
 </head>
 <body>
   <div>
-    <svg width="300" height="300" version="1.1" xmlns="http://www.w3.org/2000/svg">
-      
+    <svg viewBox="0 0 300 300" version="1.1"
+      xmlns="http://www.w3.org/2000/svg"> 
     </svg>
   </div>
 </body>
@@ -18,7 +23,12 @@
 let points = [{x:50,y:50},{x:100,y:50},{x:100,y:100},{x:50,y:100}];
 let svg = document.getElementsByTagName("svg")[0];
 let cornerSize = 20;
+let pressedX = undefined;
+let pressedY = undefined;
+let selectedIndex = -1;
+var selectedElement,offset;
 
+addEventsForSVG();
 drawPolygon();
 drawCorners();
 
@@ -63,15 +73,16 @@ function drawCorners(){
     if (!rect) {
       rect = document.createElementNS("http://www.w3.org/2000/svg","rect");
       svg.append(rect);
+      rect.setAttribute("stroke","green");
+      rect.setAttribute("stroke-width","2")
+      rect.setAttribute("fill","rgba(0,255,0,.2)")
+      rect.setAttribute("index",index);
+      rect.setAttribute("width",cornerSize);
+      rect.setAttribute("height",cornerSize);
     }
-    rect.setAttribute("stroke","green");
-    
-    rect.setAttribute("stroke-width","2")
-    rect.setAttribute("fill","rgba(0,255,0,.2)")
     rect.setAttribute("x",point.x + getOffsetX(index));
     rect.setAttribute("y",point.y + getOffsetY(index));
-    rect.setAttribute("width",cornerSize);
-    rect.setAttribute("height",cornerSize);
+    addEventsForRect(rect);
     index = index + 1;
   });
 }
@@ -89,5 +100,88 @@ function getOffsetY(index){
   }
   return 0;
 }
+
+function makeDraggable(){
+
+}
+
+function addEventsForSVG() {
+  svg.addEventListener("touchmove", function(event){
+    console.log(event);
+  });
+  svg.addEventListener("mousemove", function(event){
+    console.log("rect")
+    console.log(event);
+    if (pressedX && pressedY) {
+      let index = rect.getAttribute("index");
+      let point = points[index];
+      let offsetX = event.clientX - pressedX;
+      let offsetY = event.clientY - pressedY;
+      point.x = point.x + offsetX * 300 / 380;
+      point.y = point.y + offsetY * 300 / 380;
+      drawCorners();
+    }
+  });
+}
+
+function addEventsForRect(rect) {
+  rect.addEventListener("touchmove", function(event){
+    console.log(event);
+  });
+  rect.addEventListener("mouseup", function(event){
+    console.log(event);
+    selectedIndex = -1;
+    selectedElement = undefined;
+  });
+  rect.addEventListener("mousedown", function(event){
+    console.log(event);
+    selectedIndex = rect.getAttribute("index");
+    selectedElement = rect;
+  });
+  rect.addEventListener("mouseleave", function(event){
+    console.log(event);
+    selectedIndex = -1;
+    selectedElement = undefined;
+  });
+}
+
+//https://www.petercollingridge.co.uk/tutorials/svg/interactive/dragging/
+function addEventsForSVG() {
+  svg.addEventListener('mousedown', startDrag);
+  svg.addEventListener('mousemove', drag);
+  svg.addEventListener('mouseup', endDrag);
+  svg.addEventListener('mouseleave', endDrag);
+  function startDrag(evt) {
+    if (selectedElement) {
+      offset = getMousePosition(evt);
+      offset.x -= parseFloat(selectedElement.getAttribute("x"));
+      offset.y -= parseFloat(selectedElement.getAttribute("y"));
+    }
+  }
+  function drag(evt) {
+    if (selectedElement) {
+      evt.preventDefault();
+      let coord = getMousePosition(evt);
+      //selectedElement.setAttribute("x", coord.x - offset.x);
+      //selectedElement.setAttribute("y", coord.y - offset.y);
+      let point = points[selectedIndex];
+      point.x = (coord.x - offset.x) - getOffsetX(selectedIndex);
+      point.y = (coord.y - offset.y) - getOffsetY(selectedIndex);
+      drawCorners();
+      drawPolygon();
+    }
+  }
+  function endDrag(evt) {
+  }
+}
+
+function getMousePosition(evt) {
+  var CTM = svg.getScreenCTM();
+  return {
+    x: (evt.clientX - CTM.e) / CTM.a,
+    y: (evt.clientY - CTM.f) / CTM.d
+  };
+}
+
 </script>
 </html>
