@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>webpack starterkit</title>
+  <meta name="description" content="A light foundation for your next frontend project based on webpack.">
+</head>
+<body>
+  <div>
+    <svg width="300" height="300" version="1.1" xmlns="http://www.w3.org/2000/svg">
+      
+    </svg>
+  </div>
+</body>
+
+<script>
+let points = [{x:50,y:50},{x:100,y:50},{x:100,y:100},{x:50,y:100}];
+let svg = document.getElementsByTagName("svg")[0];
+let cornerSize = 20;
+
+drawPolygon();
+drawCorners();
+
+function drawPolygon(){
+  let polygon = svg.getElementsByTagName("polygon")[0];
+  if (!polygon) {
+    polygon = document.createElementNS("http://www.w3.org/2000/svg","polygon");
+    svg.append(polygon);
+  }
+  polygon.setAttribute("points",getPointsData());
+  polygon.setAttribute("stroke","green");
+  polygon.setAttribute("stroke-width","2");
+  polygon.setAttribute("fill","lime");
+  polygon.setAttribute("opacity","0.3");
+}
+
+function getPointsData(){
+    let pointsData = points[0].x + "," + points[0].y + " ";
+    pointsData = pointsData + points[1].x + "," + points[1].y +" ";
+    pointsData = pointsData + points[2].x + "," + points[2].y +" ";
+    pointsData = pointsData + points[3].x + "," + points[3].y;
+    return pointsData;
+}
+
+function drawPolygon(){
+  let polygon = svg.getElementsByTagName("polygon")[0];
+  if (!polygon) {
+    polygon = document.createElementNS("http://www.w3.org/2000/svg","polygon");
+    svg.append(polygon);
+  }
+  polygon.setAttribute("points",getPointsData());
+  polygon.setAttribute("stroke","green");
+  polygon.setAttribute("stroke-width","2");
+  polygon.setAttribute("fill","lime");
+  polygon.setAttribute("opacity","0.3");
+}
+
+function drawCorners(){
+  let index = 0;
+  points.forEach(point => {
+    let rect = svg.getElementsByTagName("rect")[index];
+    if (!rect) {
+      rect = document.createElementNS("http://www.w3.org/2000/svg","rect");
+      svg.append(rect);
+    }
+    rect.setAttribute("stroke","green");
+    
+    rect.setAttribute("stroke-width","2")
+    rect.setAttribute("fill","rgba(0,255,0,.2)")
+    rect.setAttribute("x",point.x + getOffsetX(index));
+    rect.setAttribute("y",point.y + getOffsetY(index));
+    rect.setAttribute("width",cornerSize);
+    rect.setAttribute("height",cornerSize);
+    index = index + 1;
+  });
+}
+
+function getOffsetX(index){
+  if (index == 0 || index == 3) {
+      return - cornerSize;
+  }
+  return 0;
+}
+
+function getOffsetY(index){
+  if (index == 0 || index == 1) {
+    return - cornerSize;
+  }
+  return 0;
+}
+</script>
+</html>
