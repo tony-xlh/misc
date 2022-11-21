@@ -171,8 +171,8 @@ function addEventsForSVG() {
 function getMousePosition(evt) {
   var CTM = svg.getScreenCTM();
   if (evt.targetTouches) {
-    x = event.targetTouches[0].clientX;
-    y = event.targetTouches[0].clientY;
+    x = evt.targetTouches[0].clientX;
+    y = evt.targetTouches[0].clientY;
     return {
       x: (x - CTM.e) / CTM.a,
       y: (y - CTM.f) / CTM.d
